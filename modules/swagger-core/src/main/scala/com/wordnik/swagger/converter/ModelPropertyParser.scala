@@ -138,6 +138,11 @@ class ModelPropertyParser(cls: Class[_], t: Map[String, String] = Map.empty) (im
         Some(processedAnnotations("description").asInstanceOf[String])
       else None
     }
+    var defaultValue = {
+      if(processedAnnotations.contains("defaultValue") && processedAnnotations("defaultValue") != null)
+        Some(processedAnnotations("defaultValue").asInstanceOf[String])
+      else None
+    }
     var isTransient = processedAnnotations("isTransient").asInstanceOf[Boolean]
     var isXmlElement = processedAnnotations("isXmlElement").asInstanceOf[Boolean]
     val isDocumented = processedAnnotations("isDocumented").asInstanceOf[Boolean]
@@ -164,6 +169,8 @@ class ModelPropertyParser(cls: Class[_], t: Map[String, String] = Map.empty) (im
         allowableValues = propAnnoOutput("allowableValues").asInstanceOf[Option[AllowableValues]]
       if(description == None && propAnnoOutput.contains("description") && propAnnoOutput("description") != null)
         description = Some(propAnnoOutput("description").asInstanceOf[String])
+      if(defaultValue == None && propAnnoOutput.contains("defaultValue") && propAnnoOutput("defaultValue") != null)
+        defaultValue = Some(propAnnoOutput("defaultValue").asInstanceOf[String])
       if(propPosition != 0) position = propAnnoOutput("position").asInstanceOf[Int]
       if(required == false) required = propAnnoOutput("required").asInstanceOf[Boolean]
       isFieldExists = true
@@ -221,6 +228,7 @@ class ModelPropertyParser(cls: Class[_], t: Map[String, String] = Map.empty) (im
             position,
             required,
             description,
+	    defaultValue,
             allowableValues.getOrElse(AnyAllowableValues),
             items)
           LOGGER.debug("added param type " + paramType + " for field " + name)
@@ -272,6 +280,7 @@ class ModelPropertyParser(cls: Class[_], t: Map[String, String] = Map.empty) (im
           description = readString(e.value)
           notes = readString(e.notes)
           paramType = readString(e.dataType)
+	  defaultValue = readString(e.defaultValue)
           if(e.required) required = true
           if(e.position != 0) position = e.position
           isDocumented = true

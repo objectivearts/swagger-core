@@ -307,6 +307,7 @@ object SwaggerSerializers extends Serializers {
           case _ => false
         },
         description = (json \ "description").extractOpt[String],
+        defaultValue = (json \ "defaultValue").extractOpt[String],
         allowableValues = allowableValues,
         items = {
           (json \ "items").extractOpt[ModelRef] match {
@@ -320,6 +321,7 @@ object SwaggerSerializers extends Serializers {
       implicit val fmts = formats
       val output = toJsonSchemaType(x) ~      
       ("description" -> x.description) ~
+      ("defaultValue" -> x.defaultValue) ~
       ("items" -> Extraction.decompose(x.items))
 
       x.allowableValues match {
@@ -890,6 +892,7 @@ trait Serializers {
           case _ => false
         },
         description = (json \ "description").extractOpt[String],
+        defaultValue = (json \ "defaultValue").extractOpt[String],
         allowableValues = (json \ "allowableValues").extract[AllowableValues],
         items = {
           (json \ "items").extractOpt[ModelRef] match {
@@ -904,6 +907,7 @@ trait Serializers {
       ("type" -> x.`type`) ~
       ("required" -> x.required) ~
       ("description" -> x.description) ~
+      ("defaultValue" -> x.defaultValue) ~
       ("allowableValues" -> {
         x.allowableValues match {
           case AnyAllowableValues => JNothing // don't serialize when not a concrete type
